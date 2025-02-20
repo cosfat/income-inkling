@@ -12,9 +12,10 @@ interface Transaction {
 interface TransactionListProps {
   type: "income" | "expense";
   transactions: Transaction[];
+  isLoading?: boolean;
 }
 
-export const TransactionList = ({ type, transactions }: TransactionListProps) => {
+export const TransactionList = ({ type, transactions, isLoading = false }: TransactionListProps) => {
   return (
     <Card className="card-hover">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -29,33 +30,36 @@ export const TransactionList = ({ type, transactions }: TransactionListProps) =>
       </CardHeader>
       <CardContent>
         <div className="space-y-2">
-          {transactions.map((transaction) => (
-            <div
-              key={transaction.id}
-              className="flex items-center justify-between p-2 hover:bg-muted rounded-lg transition-colors"
-            >
-              <div>
-                <p className="font-medium">{transaction.name}</p>
-                <p className="text-sm text-muted-foreground">
-                  {new Date(transaction.date).toLocaleDateString()}
-                </p>
-              </div>
-              <p
-                className={`font-bold ${
-                  type === "income" ? "text-primary" : "text-destructive"
-                }`}
-              >
-                {type === "income" ? "+" : "-"}$
-                {transaction.amount.toLocaleString("en-US", {
-                  minimumFractionDigits: 2,
-                })}
-              </p>
-            </div>
-          ))}
-          {transactions.length === 0 && (
+          {isLoading ? (
+            <p className="text-center text-muted-foreground">Loading...</p>
+          ) : transactions.length === 0 ? (
             <p className="text-center text-muted-foreground">
               No {type === "income" ? "income" : "expenses"} recorded yet
             </p>
+          ) : (
+            transactions.map((transaction) => (
+              <div
+                key={transaction.id}
+                className="flex items-center justify-between p-2 hover:bg-muted rounded-lg transition-colors"
+              >
+                <div>
+                  <p className="font-medium">{transaction.name}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {new Date(transaction.date).toLocaleDateString()}
+                  </p>
+                </div>
+                <p
+                  className={`font-bold ${
+                    type === "income" ? "text-primary" : "text-destructive"
+                  }`}
+                >
+                  {type === "income" ? "+" : "-"}$
+                  {Number(transaction.amount).toLocaleString("en-US", {
+                    minimumFractionDigits: 2,
+                  })}
+                </p>
+              </div>
+            ))
           )}
         </div>
       </CardContent>

@@ -1,9 +1,11 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NetWorthCard } from "@/components/NetWorthCard";
 import { TransactionForm } from "@/components/TransactionForm";
 import { TransactionList } from "@/components/TransactionList";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface Transaction {
   id: string;
@@ -15,19 +17,89 @@ interface Transaction {
 const Index = () => {
   const [incomes, setIncomes] = useState<Transaction[]>([]);
   const [expenses, setExpenses] = useState<Transaction[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetchTransactions();
+  }, []);
+
+  const fetchTransactions = async () => {
+    try {
+      const { data: incomeData, error: incomeError } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('type', 'income')
+        .order('date', { ascending: false });
+
+      const { data: expenseData, error: expenseError } = await supabase
+        .from('transactions')
+        .select('*')
+        .eq('type', 'expense')
+        .order('date', { ascending: false });
+
+      if (incomeError) throw incomeError;
+      if (expenseError) throw expenseError;
+
+      setIncomes(incomeData || []);
+      setExpenses(expenseData || []);
+    } catch (error) {
+      console.error('Error fetching transactions:', error);
+      toast.error('Failed to load transactions');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const calculateNetWorth = () => {
-    const totalIncome = incomes.reduce((sum, income) => sum + income.amount, 0);
-    const totalExpenses = expenses.reduce((sum, expense) => sum + expense.amount, 0);
+    const totalIncome = incomes.reduce((sum, income) => sum + Number(income.amount), 0);
+    const totalExpenses = expenses.reduce((sum, expense) => sum + Number(expense.amount), 0);
     return totalIncome - totalExpenses;
   };
 
-  const handleAddIncome = (data: { name: string; amount: number; date: string }) => {
-    setIncomes([...incomes, { ...data, id: crypto.randomUUID() }]);
+  const handleAddIncome = async (data: { name: string; amount: number; date: string }) => {
+    try {
+      const { data: newIncome, error } = await supabase
+        .from('transactions')
+        .insert([
+          {
+            ...data,
+            type: 'income'
+          }
+        ])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setIncomes([newIncome, ...incomes]);
+      toast.success('Income added successfully!');
+    } catch (error) {
+      console.error('Error adding income:', error);
+      toast.error('Failed to add income');
+    }
   };
 
-  const handleAddExpense = (data: { name: string; amount: number; date: string }) => {
-    setExpenses([...expenses, { ...data, id: crypto.randomUUID() }]);
+  const handleAddExpense = async (data: { name: string; amount: number; date: string }) => {
+    try {
+      const { data: newExpense, error } = await supabase
+        .from('transactions')
+        .insert([
+          {
+            ...data,
+            type: 'expense'
+          }
+        ])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      setExpenses([newExpense, ...expenses]);
+      toast.success('Expense added successfully!');
+    } catch (error) {
+      console.error('Error adding expense:', error);
+      toast.error('Failed to add expense');
+    }
   };
 
   return (
@@ -62,8 +134,16 @@ const Index = () => {
           
           <TabsContent value="view" className="space-y-6">
             <div className="grid gap-6 md:grid-cols-2">
-              <TransactionList type="income" transactions={incomes} />
-              <TransactionList type="expense" transactions={expenses} />
+              <TransactionList 
+                type="income" 
+                transactions={incomes}
+                isLoading={isLoading}
+              />
+              <TransactionList 
+                type="expense" 
+                transactions={expenses}
+                isLoading={isLoading}
+              />
             </div>
           </TabsContent>
         </Tabs>
