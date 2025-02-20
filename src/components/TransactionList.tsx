@@ -3,15 +3,23 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { HandCoins, ShoppingCart, Trash2 } from "lucide-react";
 import { Transaction } from "@/types/database.types";
+import { EditTransactionDialog } from "./EditTransactionDialog";
 
 interface TransactionListProps {
   type: "income" | "expense";
   transactions: Transaction[];
   isLoading?: boolean;
   onDelete: (id: string) => void;
+  onEdit: (id: string, data: { name: string; amount: number; date: string }) => void;
 }
 
-export const TransactionList = ({ type, transactions, isLoading = false, onDelete }: TransactionListProps) => {
+export const TransactionList = ({ 
+  type, 
+  transactions, 
+  isLoading = false, 
+  onDelete,
+  onEdit 
+}: TransactionListProps) => {
   return (
     <Card className="card-hover">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -44,7 +52,7 @@ export const TransactionList = ({ type, transactions, isLoading = false, onDelet
                     {new Date(transaction.date).toLocaleDateString()}
                   </p>
                 </div>
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-2">
                   <p
                     className={`font-bold ${
                       type === "income" ? "text-primary" : "text-destructive"
@@ -55,6 +63,10 @@ export const TransactionList = ({ type, transactions, isLoading = false, onDelet
                       minimumFractionDigits: 2,
                     })}
                   </p>
+                  <EditTransactionDialog 
+                    transaction={transaction}
+                    onEdit={onEdit}
+                  />
                   <Button 
                     variant="ghost" 
                     size="icon"

@@ -115,6 +115,38 @@ const Index = () => {
     }
   };
 
+  const handleEditTransaction = async (id: string, type: 'income' | 'expense', data: { name: string; amount: number; date: string }) => {
+    try {
+      const { data: updatedTransaction, error } = await supabase
+        .from('transactions')
+        .update({
+          name: data.name,
+          amount: data.amount,
+          date: data.date,
+        })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      if (type === 'income') {
+        setIncomes(incomes.map(income => 
+          income.id === id ? (updatedTransaction as Transaction) : income
+        ));
+      } else {
+        setExpenses(expenses.map(expense => 
+          expense.id === id ? (updatedTransaction as Transaction) : expense
+        ));
+      }
+      
+      toast.success('Transaction updated successfully');
+    } catch (error) {
+      console.error('Error updating transaction:', error);
+      toast.error('Failed to update transaction');
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 py-8 max-w-4xl">
       <h1 className="text-4xl font-bold text-center mb-8 fade-in">
@@ -152,12 +184,14 @@ const Index = () => {
                 transactions={incomes}
                 isLoading={isLoading}
                 onDelete={(id) => handleDeleteTransaction(id, 'income')}
+                onEdit={(id, data) => handleEditTransaction(id, 'income', data)}
               />
               <TransactionList 
                 type="expense" 
                 transactions={expenses}
                 isLoading={isLoading}
                 onDelete={(id) => handleDeleteTransaction(id, 'expense')}
+                onEdit={(id, data) => handleEditTransaction(id, 'expense', data)}
               />
             </div>
           </TabsContent>
