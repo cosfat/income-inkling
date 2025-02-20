@@ -34,7 +34,6 @@ const Index = () => {
       if (incomeError) throw incomeError;
       if (expenseError) throw expenseError;
 
-      // Add type assertions to ensure the data matches our Transaction type
       setIncomes((incomeData as Transaction[]) || []);
       setExpenses((expenseData as Transaction[]) || []);
     } catch (error) {
@@ -66,7 +65,6 @@ const Index = () => {
 
       if (error) throw error;
 
-      // Add type assertion here as well
       setIncomes([newIncome as Transaction, ...incomes]);
     } catch (error) {
       console.error('Error adding income:', error);
@@ -89,11 +87,31 @@ const Index = () => {
 
       if (error) throw error;
 
-      // Add type assertion here as well
       setExpenses([newExpense as Transaction, ...expenses]);
     } catch (error) {
       console.error('Error adding expense:', error);
       toast.error('Failed to add expense');
+    }
+  };
+
+  const handleDeleteTransaction = async (id: string, type: 'income' | 'expense') => {
+    try {
+      const { error } = await supabase
+        .from('transactions')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+
+      if (type === 'income') {
+        setIncomes(incomes.filter(income => income.id !== id));
+      } else {
+        setExpenses(expenses.filter(expense => expense.id !== id));
+      }
+      toast.success('Transaction deleted successfully');
+    } catch (error) {
+      console.error('Error deleting transaction:', error);
+      toast.error('Failed to delete transaction');
     }
   };
 
@@ -133,11 +151,13 @@ const Index = () => {
                 type="income" 
                 transactions={incomes}
                 isLoading={isLoading}
+                onDelete={(id) => handleDeleteTransaction(id, 'income')}
               />
               <TransactionList 
                 type="expense" 
                 transactions={expenses}
                 isLoading={isLoading}
+                onDelete={(id) => handleDeleteTransaction(id, 'expense')}
               />
             </div>
           </TabsContent>

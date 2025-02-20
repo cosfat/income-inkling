@@ -1,15 +1,17 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { HandCoins, ShoppingCart } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { HandCoins, ShoppingCart, Trash2 } from "lucide-react";
 import { Transaction } from "@/types/database.types";
 
 interface TransactionListProps {
   type: "income" | "expense";
   transactions: Transaction[];
   isLoading?: boolean;
+  onDelete: (id: string) => void;
 }
 
-export const TransactionList = ({ type, transactions, isLoading = false }: TransactionListProps) => {
+export const TransactionList = ({ type, transactions, isLoading = false, onDelete }: TransactionListProps) => {
   return (
     <Card className="card-hover">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -42,16 +44,26 @@ export const TransactionList = ({ type, transactions, isLoading = false }: Trans
                     {new Date(transaction.date).toLocaleDateString()}
                   </p>
                 </div>
-                <p
-                  className={`font-bold ${
-                    type === "income" ? "text-primary" : "text-destructive"
-                  }`}
-                >
-                  {type === "income" ? "+" : "-"}$
-                  {Number(transaction.amount).toLocaleString("en-US", {
-                    minimumFractionDigits: 2,
-                  })}
-                </p>
+                <div className="flex items-center gap-4">
+                  <p
+                    className={`font-bold ${
+                      type === "income" ? "text-primary" : "text-destructive"
+                    }`}
+                  >
+                    {type === "income" ? "+" : "-"}$
+                    {Number(transaction.amount).toLocaleString("en-US", {
+                      minimumFractionDigits: 2,
+                    })}
+                  </p>
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    onClick={() => onDelete(transaction.id)}
+                    className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                  >
+                    <Trash2 className="h-4 w-4" />
+                  </Button>
+                </div>
               </div>
             ))
           )}
