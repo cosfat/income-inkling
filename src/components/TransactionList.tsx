@@ -1,13 +1,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { HandCoins, ShoppingCart } from "lucide-react";
-
-interface Transaction {
-  id: string;
-  name: string;
-  amount: number;
-  date: string;
-}
+import { Transaction } from "@/types/database.types";
 
 interface TransactionListProps {
   type: "income" | "expense";

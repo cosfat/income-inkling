@@ -6,13 +6,7 @@ import { TransactionList } from "@/components/TransactionList";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-
-interface Transaction {
-  id: string;
-  name: string;
-  amount: number;
-  date: string;
-}
+import { Transaction } from "@/types/database.types";
 
 const Index = () => {
   const [incomes, setIncomes] = useState<Transaction[]>([]);
@@ -63,7 +57,7 @@ const Index = () => {
         .insert([
           {
             ...data,
-            type: 'income'
+            type: 'income' as const
           }
         ])
         .select()
@@ -72,7 +66,6 @@ const Index = () => {
       if (error) throw error;
 
       setIncomes([newIncome, ...incomes]);
-      toast.success('Income added successfully!');
     } catch (error) {
       console.error('Error adding income:', error);
       toast.error('Failed to add income');
@@ -86,7 +79,7 @@ const Index = () => {
         .insert([
           {
             ...data,
-            type: 'expense'
+            type: 'expense' as const
           }
         ])
         .select()
@@ -95,7 +88,6 @@ const Index = () => {
       if (error) throw error;
 
       setExpenses([newExpense, ...expenses]);
-      toast.success('Expense added successfully!');
     } catch (error) {
       console.error('Error adding expense:', error);
       toast.error('Failed to add expense');
