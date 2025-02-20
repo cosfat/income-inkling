@@ -34,8 +34,9 @@ const Index = () => {
       if (incomeError) throw incomeError;
       if (expenseError) throw expenseError;
 
-      setIncomes(incomeData || []);
-      setExpenses(expenseData || []);
+      // Add type assertions to ensure the data matches our Transaction type
+      setIncomes((incomeData as Transaction[]) || []);
+      setExpenses((expenseData as Transaction[]) || []);
     } catch (error) {
       console.error('Error fetching transactions:', error);
       toast.error('Failed to load transactions');
@@ -65,7 +66,8 @@ const Index = () => {
 
       if (error) throw error;
 
-      setIncomes([newIncome, ...incomes]);
+      // Add type assertion here as well
+      setIncomes([newIncome as Transaction, ...incomes]);
     } catch (error) {
       console.error('Error adding income:', error);
       toast.error('Failed to add income');
@@ -87,7 +89,8 @@ const Index = () => {
 
       if (error) throw error;
 
-      setExpenses([newExpense, ...expenses]);
+      // Add type assertion here as well
+      setExpenses([newExpense as Transaction, ...expenses]);
     } catch (error) {
       console.error('Error adding expense:', error);
       toast.error('Failed to add expense');
