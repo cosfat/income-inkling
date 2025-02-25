@@ -47,8 +47,16 @@ const Index = () => {
       if (incomeError) throw incomeError;
       if (expenseError) throw expenseError;
 
-      setIncomes(incomeData || []);
-      setExpenses(expenseData || []);
+      // Type assertion to ensure the data matches our Transaction type
+      setIncomes(incomeData?.map(income => ({
+        ...income,
+        type: 'income' as const
+      })) || []);
+      
+      setExpenses(expenseData?.map(expense => ({
+        ...expense,
+        type: 'expense' as const
+      })) || []);
     } catch (error) {
       console.error('Error fetching transactions:', error);
       toast.error('Failed to load transactions');
@@ -77,7 +85,12 @@ const Index = () => {
       if (error) throw error;
       if (!newIncome || newIncome.length === 0) throw new Error('No data returned after insert');
 
-      setIncomes([newIncome[0] as Transaction, ...incomes]);
+      const typedIncome: Transaction = {
+        ...newIncome[0],
+        type: 'income' as const
+      };
+
+      setIncomes([typedIncome, ...incomes]);
       toast.success('Income added successfully');
     } catch (error) {
       console.error('Error adding income:', error);
@@ -105,7 +118,12 @@ const Index = () => {
       if (error) throw error;
       if (!newExpense || newExpense.length === 0) throw new Error('No data returned after insert');
 
-      setExpenses([newExpense[0] as Transaction, ...expenses]);
+      const typedExpense: Transaction = {
+        ...newExpense[0],
+        type: 'expense' as const
+      };
+
+      setExpenses([typedExpense, ...expenses]);
       toast.success('Expense added successfully');
     } catch (error) {
       console.error('Error adding expense:', error);
@@ -158,13 +176,18 @@ const Index = () => {
 
       if (error) throw error;
 
+      const typedTransaction: Transaction = {
+        ...updatedTransaction,
+        type: type as 'income' | 'expense'
+      };
+
       if (type === 'income') {
         setIncomes(incomes.map(income => 
-          income.id === id ? (updatedTransaction as Transaction) : income
+          income.id === id ? typedTransaction : income
         ));
       } else {
         setExpenses(expenses.map(expense => 
-          expense.id === id ? (updatedTransaction as Transaction) : expense
+          expense.id === id ? typedTransaction : expense
         ));
       }
       
