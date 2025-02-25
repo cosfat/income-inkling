@@ -17,6 +17,12 @@ const Index = () => {
     fetchTransactions();
   }, []);
 
+  const calculateNetWorth = () => {
+    const totalIncome = incomes.reduce((sum, income) => sum + Number(income.amount), 0);
+    const totalExpenses = expenses.reduce((sum, expense) => sum + Number(expense.amount), 0);
+    return totalIncome - totalExpenses;
+  };
+
   const fetchTransactions = async () => {
     try {
       console.log("Fetching transactions...");
@@ -41,8 +47,8 @@ const Index = () => {
       if (incomeError) throw incomeError;
       if (expenseError) throw expenseError;
 
-      setIncomes((incomeData as Transaction[]) || []);
-      setExpenses((expenseData as Transaction[]) || []);
+      setIncomes(incomeData || []);
+      setExpenses(expenseData || []);
     } catch (error) {
       console.error('Error fetching transactions:', error);
       toast.error('Failed to load transactions');
@@ -63,15 +69,15 @@ const Index = () => {
             type: 'income' as const
           }
         ])
-        .select()
-        .single();
+        .select();
 
       console.log("New income response:", newIncome);
       console.log("New income error:", error);
 
       if (error) throw error;
+      if (!newIncome || newIncome.length === 0) throw new Error('No data returned after insert');
 
-      setIncomes([newIncome as Transaction, ...incomes]);
+      setIncomes([newIncome[0] as Transaction, ...incomes]);
       toast.success('Income added successfully');
     } catch (error) {
       console.error('Error adding income:', error);
@@ -91,15 +97,15 @@ const Index = () => {
             type: 'expense' as const
           }
         ])
-        .select()
-        .single();
+        .select();
 
       console.log("New expense response:", newExpense);
       console.log("New expense error:", error);
 
       if (error) throw error;
+      if (!newExpense || newExpense.length === 0) throw new Error('No data returned after insert');
 
-      setExpenses([newExpense as Transaction, ...expenses]);
+      setExpenses([newExpense[0] as Transaction, ...expenses]);
       toast.success('Expense added successfully');
     } catch (error) {
       console.error('Error adding expense:', error);
