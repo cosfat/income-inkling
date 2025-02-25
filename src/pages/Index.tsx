@@ -19,6 +19,8 @@ const Index = () => {
 
   const fetchTransactions = async () => {
     try {
+      console.log("Fetching transactions...");
+      
       const { data: incomeData, error: incomeError } = await supabase
         .from('transactions')
         .select('*')
@@ -30,6 +32,11 @@ const Index = () => {
         .select('*')
         .eq('type', 'expense')
         .order('date', { ascending: false });
+
+      console.log("Income data:", incomeData);
+      console.log("Income error:", incomeError);
+      console.log("Expense data:", expenseData);
+      console.log("Expense error:", expenseError);
 
       if (incomeError) throw incomeError;
       if (expenseError) throw expenseError;
@@ -44,14 +51,10 @@ const Index = () => {
     }
   };
 
-  const calculateNetWorth = () => {
-    const totalIncome = incomes.reduce((sum, income) => sum + Number(income.amount), 0);
-    const totalExpenses = expenses.reduce((sum, expense) => sum + Number(expense.amount), 0);
-    return totalIncome - totalExpenses;
-  };
-
   const handleAddIncome = async (data: { name: string; amount: number; date: string }) => {
     try {
+      console.log("Adding income:", data);
+      
       const { data: newIncome, error } = await supabase
         .from('transactions')
         .insert([
@@ -63,9 +66,13 @@ const Index = () => {
         .select()
         .single();
 
+      console.log("New income response:", newIncome);
+      console.log("New income error:", error);
+
       if (error) throw error;
 
       setIncomes([newIncome as Transaction, ...incomes]);
+      toast.success('Income added successfully');
     } catch (error) {
       console.error('Error adding income:', error);
       toast.error('Failed to add income');
@@ -74,6 +81,8 @@ const Index = () => {
 
   const handleAddExpense = async (data: { name: string; amount: number; date: string }) => {
     try {
+      console.log("Adding expense:", data);
+      
       const { data: newExpense, error } = await supabase
         .from('transactions')
         .insert([
@@ -85,9 +94,13 @@ const Index = () => {
         .select()
         .single();
 
+      console.log("New expense response:", newExpense);
+      console.log("New expense error:", error);
+
       if (error) throw error;
 
       setExpenses([newExpense as Transaction, ...expenses]);
+      toast.success('Expense added successfully');
     } catch (error) {
       console.error('Error adding expense:', error);
       toast.error('Failed to add expense');
@@ -96,10 +109,14 @@ const Index = () => {
 
   const handleDeleteTransaction = async (id: string, type: 'income' | 'expense') => {
     try {
+      console.log("Deleting transaction:", { id, type });
+      
       const { error } = await supabase
         .from('transactions')
         .delete()
         .eq('id', id);
+
+      console.log("Delete error:", error);
 
       if (error) throw error;
 
@@ -117,6 +134,8 @@ const Index = () => {
 
   const handleEditTransaction = async (id: string, type: 'income' | 'expense', data: { name: string; amount: number; date: string }) => {
     try {
+      console.log("Editing transaction:", { id, type, data });
+      
       const { data: updatedTransaction, error } = await supabase
         .from('transactions')
         .update({
@@ -127,6 +146,9 @@ const Index = () => {
         .eq('id', id)
         .select()
         .single();
+
+      console.log("Update response:", updatedTransaction);
+      console.log("Update error:", error);
 
       if (error) throw error;
 
