@@ -1,6 +1,6 @@
-
 import { useEffect, useState } from "react";
 import { NetWorthCard } from "@/components/NetWorthCard";
+import { CurrentBalanceCard } from "@/components/CurrentBalanceCard";
 import { TransactionForm } from "@/components/TransactionForm";
 import { TransactionList } from "@/components/TransactionList";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -20,6 +20,20 @@ const Index = () => {
   const calculateNetWorth = () => {
     const totalIncome = incomes.reduce((sum, income) => sum + Number(income.amount), 0);
     const totalExpenses = expenses.reduce((sum, expense) => sum + Number(expense.amount), 0);
+    return totalIncome - totalExpenses;
+  };
+
+  const calculateCurrentBalance = () => {
+    const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+    
+    const totalIncome = incomes
+      .filter(income => income.date <= today)
+      .reduce((sum, income) => sum + Number(income.amount), 0);
+    
+    const totalExpenses = expenses
+      .filter(expense => expense.date <= today)
+      .reduce((sum, expense) => sum + Number(expense.amount), 0);
+    
     return totalIncome - totalExpenses;
   };
 
@@ -205,8 +219,9 @@ const Index = () => {
       </h1>
       
       <div className="grid gap-6">
-        <div className="fade-in" style={{ animationDelay: "0.2s" }}>
+        <div className="grid gap-6 md:grid-cols-2 fade-in" style={{ animationDelay: "0.2s" }}>
           <NetWorthCard netWorth={calculateNetWorth()} />
+          <CurrentBalanceCard balance={calculateCurrentBalance()} />
         </div>
 
         <Tabs defaultValue="add" className="fade-in" style={{ animationDelay: "0.4s" }}>
