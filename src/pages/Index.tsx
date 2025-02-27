@@ -213,12 +213,12 @@ const Index = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-4xl">
+    <div className="container mx-auto px-4 py-12 md:py-16 max-w-4xl min-h-screen">
       <h1 className="text-4xl font-bold text-center mb-8 fade-in">
         Financial Tracker
       </h1>
       
-      <div className="grid gap-6">
+      <div className="grid gap-6 pb-12">
         <div className="grid gap-6 md:grid-cols-2 fade-in" style={{ animationDelay: "0.2s" }}>
           <NetWorthCard netWorth={calculateNetWorth()} />
           <CurrentBalanceCard balance={calculateCurrentBalance()} />
