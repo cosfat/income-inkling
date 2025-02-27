@@ -20,6 +20,11 @@ export const TransactionList = ({
   onDelete,
   onEdit 
 }: TransactionListProps) => {
+  // Sort transactions by date in descending order
+  const sortedTransactions = [...transactions].sort((a, b) => 
+    new Date(b.date).getTime() - new Date(a.date).getTime()
+  );
+
   return (
     <Card className="card-hover">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -41,7 +46,7 @@ export const TransactionList = ({
               No {type === "income" ? "income" : "expenses"} recorded yet
             </p>
           ) : (
-            transactions.map((transaction) => (
+            sortedTransactions.map((transaction) => (
               <div
                 key={transaction.id}
                 className="flex items-center justify-between p-2 hover:bg-muted rounded-lg transition-colors"
