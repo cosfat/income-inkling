@@ -215,7 +215,7 @@ const Index = () => {
   return (
     <div className="container mx-auto px-4 py-12 md:py-16 max-w-4xl min-h-screen">
       <h1 className="text-4xl font-bold text-center mb-8 fade-in">
-        Financial Tracker
+        Finansal takip
       </h1>
       
       <div className="grid gap-6 pb-12">
