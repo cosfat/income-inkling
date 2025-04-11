@@ -1,4 +1,3 @@
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -64,9 +63,9 @@
   @apply transition-all duration-300 hover:shadow-lg hover:-translate-y-1;
 }
 
+/* Animasyonlar */
 .fade-in {
-  opacity: 0;
-  animation: fadeIn 0.5s ease-in forwards;
+  animation: fadeIn 0.5s ease-in-out forwards;
 }
 
 @keyframes fadeIn {
@@ -78,4 +77,162 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Takvim Stilleri */
+.react-calendar {
+  width: 100%;
+  max-width: 100%;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.react-calendar--doubleView {
+  width: 700px;
+}
+
+.react-calendar--doubleView .react-calendar__viewContainer {
+  display: flex;
+  margin: -0.5em;
+}
+
+.react-calendar--doubleView .react-calendar__viewContainer > * {
+  width: 50%;
+  margin: 0.5em;
+}
+
+.react-calendar button {
+  border-radius: 0.25rem;
+  margin: 1px;
+}
+
+.react-calendar button:enabled:hover {
+  background-color: #f7fafc;
+}
+
+.react-calendar__navigation {
+  display: flex;
+  margin-bottom: 0.5rem;
+}
+
+.react-calendar__navigation button {
+  min-width: 2rem;
+  background: none;
+  padding: 0.25rem;
+}
+
+.react-calendar__navigation button:disabled {
+  background-color: #f0f0f0;
+}
+
+.react-calendar__navigation button:enabled:hover,
+.react-calendar__navigation button:enabled:focus {
+  background-color: #f7fafc;
+}
+
+.react-calendar__month-view__weekdays {
+  text-align: center;
+  font-weight: bold;
+  font-size: 0.9em;
+}
+
+.react-calendar__month-view__weekdays__weekday {
+  padding: 0.5rem;
+}
+
+.react-calendar__month-view__weekNumbers .react-calendar__tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8em;
+  padding: 0.75rem 0.5rem;
+}
+
+.react-calendar__month-view__days__day--weekend {
+  color: #e53e3e;
+}
+
+.react-calendar__month-view__days__day--neighboringMonth {
+  color: #a0aec0;
+}
+
+.react-calendar__year-view .react-calendar__tile,
+.react-calendar__decade-view .react-calendar__tile,
+.react-calendar__century-view .react-calendar__tile {
+  padding: 1rem 0.5rem;
+}
+
+.react-calendar__tile {
+  max-width: 100%;
+  padding: 0.75rem 0.5rem;
+  background: none;
+  text-align: center;
+  line-height: 1.2;
+  position: relative;
+  height: 70px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.react-calendar__tile abbr {
+  position: absolute;
+  top: 5px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.react-calendar__tile:enabled:hover,
+.react-calendar__tile:enabled:focus {
+  background-color: #f7fafc;
+}
+
+.react-calendar__tile--now {
+  background: #e9f5ff;
+}
+
+.react-calendar__tile--now:enabled:hover,
+.react-calendar__tile--now:enabled:focus {
+  background: #d4ebff;
+}
+
+.react-calendar__tile--hasActive {
+  background: #4299e1;
+  color: white;
+}
+
+.react-calendar__tile--hasActive:enabled:hover,
+.react-calendar__tile--hasActive:enabled:focus {
+  background: #3182ce;
+}
+
+.react-calendar__tile--active {
+  background: #4299e1;
+  color: white;
+}
+
+.react-calendar__tile--active:enabled:hover,
+.react-calendar__tile--active:enabled:focus {
+  background: #3182ce;
+}
+
+/* İşlem tipleri için renkler */
+.bg-green-100 abbr {
+  color: #276749;
+}
+
+.bg-red-100 abbr {
+  color: #9b2c2c;
+}
+
+.bg-purple-100 abbr {
+  color: #553c9a;
+}
+
+.react-calendar__tile .text-xs {
+  margin-top: 20px;
 }
