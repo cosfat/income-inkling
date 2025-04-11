@@ -236,3 +236,25 @@
 .react-calendar__tile .text-xs {
   margin-top: 20px;
 }
+
+/* Tab stilleri */
+.tab-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Mobil ekranlarda metin gizlenir, sadece ikonlar gösterilir */
+@media (max-width: 768px) {
+  .tab-text {
+    display: none;
+  }
+}
+
+/* Daha büyük ekranlarda hem ikon hem metin gösterilir */
+@media (min-width: 769px) {
+  .tab-text {
+    display: inline-block;
+    margin-left: 0.5rem;
+  }
+}

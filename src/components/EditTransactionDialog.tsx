@@ -1,4 +1,3 @@
-
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Pencil } from "lucide-react";
@@ -18,17 +17,25 @@ import { Transaction } from "@/types/database.types";
 import { useState } from "react";
 
 const formSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(1, "İsim gereklidir"),
   amount: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
-    message: "Amount must be a positive number",
+    message: "Tutar pozitif bir sayı olmalıdır",
   }),
-  date: z.string().min(1, "Date is required"),
+  date: z.string().min(1, "Tarih gereklidir"),
 });
 
 interface EditTransactionDialogProps {
   transaction: Transaction;
   onEdit: (id: string, data: { name: string; amount: number; date: string }) => void;
 }
+
+// Yardımcı fonksiyon - saat dilimi sorunlarını önler
+const formatDateToYYYYMMDD = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
 
 export const EditTransactionDialog = ({ transaction, onEdit }: EditTransactionDialogProps) => {
   const [open, setOpen] = useState(false);
@@ -64,7 +71,7 @@ export const EditTransactionDialog = ({ transaction, onEdit }: EditTransactionDi
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Edit Transaction</DialogTitle>
+          <DialogTitle>İşlemi Düzenle</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
@@ -73,9 +80,9 @@ export const EditTransactionDialog = ({ transaction, onEdit }: EditTransactionDi
               name="name"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Name</FormLabel>
+                  <FormLabel>İsim</FormLabel>
                   <FormControl>
-                    <Input placeholder="Enter name" {...field} />
+                    <Input placeholder="İsim girin" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -86,11 +93,11 @@ export const EditTransactionDialog = ({ transaction, onEdit }: EditTransactionDi
               name="amount"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Amount</FormLabel>
+                  <FormLabel>Tutar</FormLabel>
                   <FormControl>
                     <Input
                       type="number"
-                      placeholder="Enter amount"
+                      placeholder="Tutar girin"
                       step="0.01"
                       {...field}
                     />
@@ -104,7 +111,7 @@ export const EditTransactionDialog = ({ transaction, onEdit }: EditTransactionDi
               name="date"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel>Date</FormLabel>
+                  <FormLabel>Tarih</FormLabel>
                   <FormControl>
                     <Input type="date" {...field} />
                   </FormControl>
@@ -113,7 +120,7 @@ export const EditTransactionDialog = ({ transaction, onEdit }: EditTransactionDi
               )}
             />
             <Button type="submit" className="w-full">
-              Save Changes
+              Değişiklikleri Kaydet
             </Button>
           </form>
         </Form>

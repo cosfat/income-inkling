@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -16,11 +15,11 @@ import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
 
 const formSchema = z.object({
-  name: z.string().min(1, "Name is required"),
+  name: z.string().min(1, "İsim gereklidir"),
   amount: z.string().refine((val) => !isNaN(Number(val)) && Number(val) > 0, {
-    message: "Amount must be a positive number",
+    message: "Tutar pozitif bir sayı olmalıdır",
   }),
-  date: z.string().min(1, "Date is required"),
+  date: z.string().min(1, "Tarih gereklidir"),
 });
 
 interface TransactionFormProps {
@@ -28,13 +27,21 @@ interface TransactionFormProps {
   onSubmit: (data: { name: string; amount: number; date: string }) => void;
 }
 
+// Yardımcı fonksiyon - saat dilimi sorunlarını önler
+const formatDateToYYYYMMDD = (date: Date) => {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 export const TransactionForm = ({ type, onSubmit }: TransactionFormProps) => {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: "",
       amount: "",
-      date: new Date().toISOString().split("T")[0],
+      date: formatDateToYYYYMMDD(new Date()),
     },
   });
 
@@ -45,7 +52,7 @@ export const TransactionForm = ({ type, onSubmit }: TransactionFormProps) => {
       date: values.date,
     });
     form.reset();
-    toast.success(`${type === "income" ? "Income" : "Expense"} added successfully!`);
+    toast.success(`${type === "income" ? "Gelir" : "Gider"} başarıyla eklendi!`);
   };
 
   return (
@@ -56,9 +63,9 @@ export const TransactionForm = ({ type, onSubmit }: TransactionFormProps) => {
           name="name"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Name</FormLabel>
+              <FormLabel>İsim</FormLabel>
               <FormControl>
-                <Input placeholder={`Enter ${type} name`} {...field} />
+                <Input placeholder={`${type === "income" ? "Gelir" : "Gider"} ismi girin`} {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -69,9 +76,9 @@ export const TransactionForm = ({ type, onSubmit }: TransactionFormProps) => {
           name="amount"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Amount</FormLabel>
+              <FormLabel>Tutar</FormLabel>
               <FormControl>
-                <Input type="number" placeholder="Enter amount" step="0.01" {...field} />
+                <Input type="number" placeholder="Tutar girin" step="0.01" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
@@ -82,7 +89,7 @@ export const TransactionForm = ({ type, onSubmit }: TransactionFormProps) => {
           name="date"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Date</FormLabel>
+              <FormLabel>Tarih</FormLabel>
               <FormControl>
                 <Input type="date" {...field} />
               </FormControl>
@@ -91,7 +98,7 @@ export const TransactionForm = ({ type, onSubmit }: TransactionFormProps) => {
           )}
         />
         <Button type="submit" className="w-full">
-          Add {type === "income" ? "Income" : "Expense"}
+          {type === "income" ? "Gelir" : "Gider"} Ekle
         </Button>
       </form>
     </Form>

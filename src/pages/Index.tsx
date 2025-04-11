@@ -9,6 +9,9 @@ import { toast } from "sonner";
 import { Transaction } from "@/types/database.types";
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
+import { FaPlus, FaList, FaCalendarAlt, FaInfoCircle, FaCheck, FaTimes } from "react-icons/fa";
+import { MdOutlinePayments, MdOutlineMoneyOff } from "react-icons/md";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const Index = () => {
   const [incomes, setIncomes] = useState<Transaction[]>([]);
@@ -31,17 +34,26 @@ const Index = () => {
   };
 
   const calculateCurrentBalance = () => {
-    const today = new Date().toISOString().split('T')[0]; // Get today's date in YYYY-MM-DD format
+    const today = new Date();
+    const todayStr = formatDateToYYYYMMDD(today); // Saat dilimi farkı olmadan bugünün tarihini al
     
     const totalIncome = incomes
-      .filter(income => income.date <= today)
+      .filter(income => income.date <= todayStr)
       .reduce((sum, income) => sum + Number(income.amount), 0);
     
     const totalExpenses = expenses
-      .filter(expense => expense.date <= today)
+      .filter(expense => expense.date <= todayStr)
       .reduce((sum, expense) => sum + Number(expense.amount), 0);
     
     return totalIncome - totalExpenses;
+  };
+
+  // Tarih dönüştürme yardımcı fonksiyonu - saat dilimi sorunlarını önler
+  const formatDateToYYYYMMDD = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
   };
 
   const fetchTransactions = async () => {
@@ -229,6 +241,63 @@ const Index = () => {
         Finansal Takip
       </h1>
       
+      {/* Bugünkü işlemler bilgi kutusu */}
+      {(() => {
+        const today = formatDateToYYYYMMDD(new Date());
+        const todayIncomes = incomes.filter(income => income.date === today);
+        const todayExpenses = expenses.filter(expense => expense.date === today);
+        
+        const totalTodayIncome = todayIncomes.reduce((sum, income) => sum + Number(income.amount), 0);
+        const totalTodayExpense = todayExpenses.reduce((sum, expense) => sum + Number(expense.amount), 0);
+        
+        // Bugün işlem yoksa null döndür
+        if (todayIncomes.length === 0 && todayExpenses.length === 0) {
+          return null;
+        }
+        
+        return (
+          <Alert className="mb-6 fade-in bg-blue-50 border-blue-200">
+            <FaInfoCircle className="h-5 w-5 text-blue-600" />
+            <AlertTitle className="text-blue-800 font-medium">Bugünkü İşlemleriniz</AlertTitle>
+            <AlertDescription className="mt-2">
+              <div className="grid gap-3 mt-2">
+                {todayIncomes.length > 0 && (
+                  <div className="bg-white p-3 rounded border border-green-100">
+                    <div className="flex items-center text-green-700 font-medium mb-2">
+                      <MdOutlinePayments className="mr-2" /> Bugünkü Gelirler: {totalTodayIncome.toLocaleString('tr-TR')} ₺
+                    </div>
+                    <div className="pl-2 space-y-1 text-sm max-h-24 overflow-y-auto">
+                      {todayIncomes.map(income => (
+                        <div key={income.id} className="flex justify-between">
+                          <span>{income.name}</span>
+                          <span className="font-medium text-green-600">{Number(income.amount).toLocaleString('tr-TR')} ₺</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {todayExpenses.length > 0 && (
+                  <div className="bg-white p-3 rounded border border-red-100">
+                    <div className="flex items-center text-red-700 font-medium mb-2">
+                      <MdOutlineMoneyOff className="mr-2" /> Bugünkü Giderler: {totalTodayExpense.toLocaleString('tr-TR')} ₺
+                    </div>
+                    <div className="pl-2 space-y-1 text-sm max-h-24 overflow-y-auto">
+                      {todayExpenses.map(expense => (
+                        <div key={expense.id} className="flex justify-between">
+                          <span>{expense.name}</span>
+                          <span className="font-medium text-red-600">{Number(expense.amount).toLocaleString('tr-TR')} ₺</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </AlertDescription>
+          </Alert>
+        );
+      })()}
+      
       <div className="grid gap-6 pb-12">
         <div className="grid gap-6 md:grid-cols-2 fade-in">
           <NetWorthCard netWorth={calculateNetWorth()} />
@@ -237,19 +306,28 @@ const Index = () => {
 
         <Tabs defaultValue="add" className="fade-in">
           <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="add">Add Transaction</TabsTrigger>
-            <TabsTrigger value="view">View Transactions</TabsTrigger>
-            <TabsTrigger value="calendar">Takvim Görünümü</TabsTrigger>
+            <TabsTrigger value="add" className="flex items-center justify-center gap-2">
+              <FaPlus className="w-5 h-5" />
+              <span className="hidden md:inline">İşlem Ekle</span>
+            </TabsTrigger>
+            <TabsTrigger value="view" className="flex items-center justify-center gap-2">
+              <FaList className="w-5 h-5" />
+              <span className="hidden md:inline">İşlemleri Gör</span>
+            </TabsTrigger>
+            <TabsTrigger value="calendar" className="flex items-center justify-center gap-2">
+              <FaCalendarAlt className="w-5 h-5" />
+              <span className="hidden md:inline">Takvim</span>
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="add" className="space-y-6">
             <div className="grid gap-6 md:grid-cols-2">
               <div>
-                <h3 className="font-semibold mb-4">Add Income</h3>
+                <h3 className="font-semibold mb-4">Gelir Ekle</h3>
                 <TransactionForm type="income" onSubmit={handleAddIncome} />
               </div>
               <div>
-                <h3 className="font-semibold mb-4">Add Expense</h3>
+                <h3 className="font-semibold mb-4">Gider Ekle</h3>
                 <TransactionForm type="expense" onSubmit={handleAddExpense} />
               </div>
             </div>
@@ -264,7 +342,7 @@ const Index = () => {
                   const today = new Date();
                   const oneMonthAgo = new Date();
                   oneMonthAgo.setMonth(today.getMonth() - 1);
-                  const oneMonthAgoStr = oneMonthAgo.toISOString().split('T')[0];
+                  const oneMonthAgoStr = formatDateToYYYYMMDD(oneMonthAgo);
                   
                   // Sadece bir aydan yeni gelirleri göster
                   return income.date >= oneMonthAgoStr;
@@ -280,7 +358,7 @@ const Index = () => {
                   const today = new Date();
                   const oneMonthAgo = new Date();
                   oneMonthAgo.setMonth(today.getMonth() - 1);
-                  const oneMonthAgoStr = oneMonthAgo.toISOString().split('T')[0];
+                  const oneMonthAgoStr = formatDateToYYYYMMDD(oneMonthAgo);
                   
                   // Sadece bir aydan yeni giderleri göster
                   return expense.date >= oneMonthAgoStr;
@@ -305,7 +383,7 @@ const Index = () => {
                   
                   // Seçilen güne ait işlemleri bulma
                   if (selectedDate) {
-                    const dateStr = selectedDate.toISOString().split('T')[0];
+                    const dateStr = formatDateToYYYYMMDD(selectedDate);
                     const dayIncomes = incomes.filter(income => income.date === dateStr);
                     const dayExpenses = expenses.filter(expense => expense.date === dateStr);
                     setSelectedDateTransactions({ incomes: dayIncomes, expenses: dayExpenses });
@@ -313,7 +391,7 @@ const Index = () => {
                 }}
                 tileContent={({ date, view }) => {
                   if (view === 'month') {
-                    const dateStr = date.toISOString().split('T')[0];
+                    const dateStr = formatDateToYYYYMMDD(date);
                     
                     // O güne ait gelirler ve giderler
                     const dayIncomes = incomes.filter(income => income.date === dateStr);
@@ -340,7 +418,7 @@ const Index = () => {
                 }}
                 tileClassName={({ date, view }) => {
                   if (view === 'month') {
-                    const dateStr = date.toISOString().split('T')[0];
+                    const dateStr = formatDateToYYYYMMDD(date);
                     const hasIncome = incomes.some(income => income.date === dateStr);
                     const hasExpense = expenses.some(expense => expense.date === dateStr);
                     

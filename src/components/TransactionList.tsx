@@ -1,4 +1,3 @@
-
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { HandCoins, ShoppingCart, Trash2 } from "lucide-react";
@@ -29,7 +28,7 @@ export const TransactionList = ({
     <Card className="card-hover">
       <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
         <CardTitle className="text-sm font-medium">
-          {type === "income" ? "Income" : "Expenses"}
+          {type === "income" ? "Gelirler" : "Giderler"}
         </CardTitle>
         {type === "income" ? (
           <HandCoins className="h-4 w-4 text-muted-foreground" />
@@ -40,10 +39,10 @@ export const TransactionList = ({
       <CardContent>
         <div className="space-y-2">
           {isLoading ? (
-            <p className="text-center text-muted-foreground">Loading...</p>
+            <p className="text-center text-muted-foreground">Yükleniyor...</p>
           ) : transactions.length === 0 ? (
             <p className="text-center text-muted-foreground">
-              No {type === "income" ? "income" : "expenses"} recorded yet
+              Henüz {type === "income" ? "gelir" : "gider"} kaydedilmemiş
             </p>
           ) : (
             sortedTransactions.map((transaction) => (
@@ -54,7 +53,7 @@ export const TransactionList = ({
                 <div>
                   <p className="font-medium">{transaction.name}</p>
                   <p className="text-sm text-muted-foreground">
-                    {new Date(transaction.date).toLocaleDateString()}
+                    {new Date(transaction.date).toLocaleDateString('tr-TR')}
                   </p>
                 </div>
                 <div className="flex items-center gap-2">
@@ -63,10 +62,10 @@ export const TransactionList = ({
                       type === "income" ? "text-primary" : "text-destructive"
                     }`}
                   >
-                    {type === "income" ? "+" : "-"}$
-                    {Number(transaction.amount).toLocaleString("en-US", {
+                    {type === "income" ? "+" : "-"}
+                    {Number(transaction.amount).toLocaleString("tr-TR", {
                       minimumFractionDigits: 2,
-                    })}
+                    })} ₺
                   </p>
                   <EditTransactionDialog 
                     transaction={transaction}
