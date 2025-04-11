@@ -405,10 +405,16 @@ const Index = () => {
                       return (
                         <div className="text-xs">
                           {totalIncome > 0 && (
-                            <div className="text-green-600">+{totalIncome.toFixed(2)} ₺</div>
+                            <div className="text-green-600">+{Number(totalIncome).toLocaleString('tr-TR', {
+                              minimumFractionDigits: 0,
+                              maximumFractionDigits: 0,
+                            })}₺</div>
                           )}
                           {totalExpense > 0 && (
-                            <div className="text-red-600">-{totalExpense.toFixed(2)} ₺</div>
+                            <div className="text-red-600">-{Number(totalExpense).toLocaleString('tr-TR', {
+                              minimumFractionDigits: 0,
+                              maximumFractionDigits: 0,
+                            })}₺</div>
                           )}
                         </div>
                       );

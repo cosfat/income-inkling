@@ -179,11 +179,28 @@
   align-items: center;
 }
 
+/* Mobil görünüm için takvim günü yüksekliği artışı */
+@media (max-width: 768px) {
+  .react-calendar__tile {
+    height: 85px; /* Mobilde daha yüksek */
+    padding: 0.5rem 0.25rem;
+  }
+}
+
 .react-calendar__tile abbr {
   position: absolute;
   top: 5px;
   left: 50%;
   transform: translateX(-50%);
+  font-size: 0.9rem;
+}
+
+/* Mobil için gün numarası yazı boyutu */
+@media (max-width: 768px) {
+  .react-calendar__tile abbr {
+    font-size: 0.8rem;
+    top: 4px;
+  }
 }
 
 .react-calendar__tile:enabled:hover,
@@ -235,6 +252,28 @@
 
 .react-calendar__tile .text-xs {
   margin-top: 20px;
+  font-size: 0.7rem;
+  width: 100%;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* Mobil görünüm için tutarların gösterimi */
+@media (max-width: 768px) {
+  .react-calendar__tile .text-xs {
+    font-size: 0.65rem;
+    margin-top: 25px;
+    line-height: 1.1;
+  }
+  
+  /* Takvim günü içinde tutarları iki satırda göster */
+  .react-calendar__tile .text-xs div {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    width: 100%;
+    padding: 0 2px;
+  }
 }
 
 /* Tab stilleri */
